@@ -27,10 +27,7 @@ batch_size = args.batch_size
 imgfile = args.imgfile
 folder = args.folder
 
-# model = load_model('vggCnD.bak')
 model = load_model(modelfile)
-
-# batch_size = 8
 
 
 def predictOneImage(img):
@@ -55,13 +52,13 @@ textures = ['blanket1',
             'linseeds1',
             'oatmeal1']
 
-textures = ['blanket1', 'canvas1']
-# folder = '/home/dave/mag/tf/ds/ktd/'
+# textures = ['blanket1', 'canvas1']
+postfix = '_test'
 
 images = []
 for i, j in enumerate(textures):
     images.extend(
-        list(map(lambda x: (i, j + '/' + x), os.listdir(folder + j))))
+        list(map(lambda x: (i, f'{j}{postfix}/{x}'), os.listdir(f'{folder}/{j}{postfix}'))))
 
 images = np.array(images)
 np.random.shuffle(images)
@@ -89,10 +86,12 @@ def gen(batch_size):
         targets = []
         for i in gengen(q, batch_size):
             inputs.append(imgload(folder + i[1]))
-            targets.append((1, 0) if int(i[0]) == 1 else (0, 1))
+            output = np.zeros(len(textures))
+            output[int(i[0])] = 1
+            targets.append(output)
         yield np.array(inputs), np.array(targets)
         q += batch_size
-        if q + batch_size > len(images) + batch_size:
+        if q + batch_size >= len(images) + batch_size:
             q = 0
 
 

@@ -31,9 +31,6 @@ logfile = args.logfile
 batch_size = args.batch_size
 folder = args.folder
 
-# batch_size = 16
-# folder = '/home/dave/mag/tf/ds/cktd/'
-
 textures = ['blanket1',
             'canvas1',
             'ceiling1',
@@ -79,8 +76,6 @@ def gen(batch_size):
             output = np.zeros(len(textures))
             output[int(i[0])] = 1
             targets.append(output)
-        # print(np.array(inputs).shape)
-        # print(np.array(targets).shape)
         yield np.array(inputs), np.array(targets)
         q += batch_size
         if q + batch_size >= len(images) + batch_size:
@@ -92,7 +87,8 @@ def gen(batch_size):
 
 callbacks = [
     CSVLogger(filename=logfile),
-    EarlyStopping(monitor='val_acc', patience=5, mode='max', baseline=0.95),
+    # EarlyStopping(monitor='val_acc', mode='max', min_delta=0.01, patience=5, baseline=0.95, verbose=1),
+    # EarlyStopping(monitor='acc', mode='auto', patience=5, verbose=1),
     TerminateOnNaN()
 ]
 
