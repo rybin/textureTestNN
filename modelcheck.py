@@ -19,6 +19,9 @@ parser.add_argument('-m', '--model', dest='modelfile', action='store',
 parser.add_argument('-p', '--predict', dest='imgfile', action='store',
                     default=None,
                     help='Image file to predict image')
+parser.add_argument('--rep', dest='rep', action='store',
+                    default=None,
+                    help='Prepare data for report, save numpy array to REP')
 
 args = parser.parse_args()
 
@@ -100,6 +103,16 @@ def eg():
                                     steps=int(len(images) / batch_size),
                                     # steps=100,
                                     )
+
+
+def genPred():
+    return model.predict_generator(gen(batch_size),
+                                   steps=int(len(images) / batch_size),
+                                   )
+
+
+def getTruePred():
+    return images.T[0].astype(int), np.array([x.argmax() for x in genPred()])
 
 
 if __name__ == '__main__':
