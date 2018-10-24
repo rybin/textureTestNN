@@ -23,7 +23,7 @@ def cropInFour(folder, newfolder):
         os.mkdir(f'{newfolder}/{i}')
         for j in os.listdir(f'{folder}/{i}'):
             img = cv2.imread(folder + '/' + i + '/' + j)
-            img1, img2 = np.array_split(img, 2)
+            img1, img2 = np.array_split(img, 2) 
             img11, img12 = np.array_split(img1, 2, axis=1)
             img21, img22 = np.array_split(img2, 2, axis=1)
             cv2.imwrite(newfolder + '/' + i + '/' + '11_' + j, img11)
@@ -39,10 +39,11 @@ def cropInFour(folder, newfolder):
 def moveTestImages(folder):
     for i in os.listdir(folder):
         os.mkdir(f'{folder}/{i}_test')
-        for j in os.listdir(f'{folder}/{i}'):
-            if np.random.randint(4) == 0:
-                os.rename(f'{folder}/{i}/{j}', f'{folder}/{i}_test/{j}')
-                print(f'{folder}/{i}/{j}', f'{folder}/{i}_test/{j}')
+        listdir = np.array(os.listdir(f'{folder}/{i}'))
+        np.random.shuffle(listdir)
+        for j in listdir[:int(len(listdir) / 4)]:
+            os.rename(f'{folder}/{i}/{j}', f'{folder}/{i}_test/{j}')
+            print(f'{folder}/{i}/{j}', f'{folder}/{i}_test/{j}')
 
 
 if __name__ == '__main__':
@@ -50,6 +51,10 @@ if __name__ == '__main__':
     # newfolder = '/home/dave/mag/tf/ds/cktd'
     folder = args.folder
     newfolder = args.newfolder
+
+    if not os.path.exists(newfolder):
+        os.mkdir(newfolder)
+        print(f'Creating {newfolder}')
 
     if args.crop:
         print('Croping images')
