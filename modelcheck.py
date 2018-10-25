@@ -77,7 +77,7 @@ def loadImageNameGlobal(ten):
                     'linseeds1',
                     'oatmeal1']
     else:
-        textures = ['blanket1', 'blanket2', 'canvas1', 'ceiling1', 'ceiling2', 'cushion1', 'floor1', 'floor2', 'grass1', 'lentils1', 'linseeds1', 'oatmeal1', 'pearlsugar1',
+        textures = ['blanket1', 'canvas1', 'ceiling1', 'ceiling2', 'cushion1', 'floor1', 'floor2', 'grass1', 'linseeds1', 'oatmeal1', 'blanket2', 'lentils1', 'pearlsugar1',
                     'rice1', 'rice2', 'rug1', 'sand1', 'scarf1', 'scarf2', 'screen1', 'seat1', 'seat2', 'sesameseeds1', 'stone1', 'stone2', 'stone3', 'stoneslab1', 'wall1']
 
     postfix = '_test'
