@@ -13,10 +13,10 @@ def _parseArgs():
                         type=int, default=16,
                         help='Batch size')
     parser.add_argument('-f', '--folder', dest='folder', action='store',
-                        default='ds/cktd/',
-                        help='Folder with pictures')
+                        default=os.path.join('ds', 'cktd', 'test'),
+                        help='Folder with test pictures')
     parser.add_argument('-m', '--model', dest='modelfile', action='store',
-                        default='models/textureVGGmodel',
+                        default=os.path.join('models', 'textureModel'),
                         help='Model filename')
     parser.add_argument('-10', dest='ten', action='store_true',
                         help='Test on 10 classes. (hardcoded)')
@@ -80,12 +80,10 @@ def loadImageNameGlobal(ten):
         textures = ['blanket1', 'canvas1', 'ceiling1', 'ceiling2', 'cushion1', 'floor1', 'floor2', 'grass1', 'linseeds1', 'oatmeal1', 'blanket2', 'lentils1', 'pearlsugar1',
                     'rice1', 'rice2', 'rug1', 'sand1', 'scarf1', 'scarf2', 'screen1', 'seat1', 'seat2', 'sesameseeds1', 'stone1', 'stone2', 'stone3', 'stoneslab1', 'wall1']
 
-    postfix = '_test'
-
     images = []
     for i, j in enumerate(textures):
         images.extend(
-            list(map(lambda x: (i, f'{j}{postfix}/{x}'), os.listdir(f'{folder}/{j}{postfix}'))))
+            list(map(lambda x: (i, os.path.join(j, x)), os.listdir(os.path.join(folder, j)))))
 
     images = np.array(images)
     np.random.shuffle(images)
@@ -112,7 +110,7 @@ def gen(batch_size):
         inputs = []
         targets = []
         for i in gengen(q, batch_size):
-            inputs.append(imgload(folder + i[1]))
+            inputs.append(imgload(os.path.join(folder, i[1])))
             output = np.zeros(len(textures))
             output[int(i[0])] = 1
             targets.append(output)
@@ -124,10 +122,13 @@ def gen(batch_size):
 
 def checkAll(args):
     loadImageNameGlobal(args.ten)
-    return model.evaluate_generator(gen(batch_size),
-                                    steps=int(len(images) / batch_size),
-                                    # steps=100,
-                                    )
+    res = model.evaluate_generator(gen(batch_size),
+                                   steps=int(len(images) / batch_size),
+                                   # steps=100,
+                                   )
+    with open(os.path.join('logs', 'check.log'), 'a') as f:
+        print(f'{modelfile},{res[1]},{res[0]}', file=f)
+    return res
 
 
 def genPred():
@@ -140,6 +141,7 @@ def getTruePred(args):
     loadImageNameGlobal(args.ten)
     report = images.T[0].astype(int), np.array([x.argmax() for x in genPred()])
     np.save(args.reportfile, report)
+    return f'Saved to {srgs.reportfile}'
 
 
 if __name__ == '__main__':
@@ -155,6 +157,10 @@ if __name__ == '__main__':
     modelfile = args.modelfile
     batch_size = args.batch_size
     folder = args.folder
+
+    print('#' * 40, f'# {10 if args.ten else 28} classes, {batch_size} batch_size',
+          f'# Get test pictures from {folder}',
+          f'# {modelfile}', '#' * 40, sep=os.linesep)
 
     model = load_model(modelfile)
     # loadImageNameGlobal(args.ten)
