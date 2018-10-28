@@ -141,7 +141,7 @@ def getTruePred(args):
     loadImageNameGlobal(args.ten)
     report = images.T[0].astype(int), np.array([x.argmax() for x in genPred()])
     np.save(args.reportfile, report)
-    return f'Saved to {srgs.reportfile}'
+    return f'Saved to {args.reportfile}'
 
 
 if __name__ == '__main__':
