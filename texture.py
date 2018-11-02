@@ -4,7 +4,7 @@ from keras.applications.resnet50 import ResNet50
 from keras.applications.inception_v3 import InceptionV3
 from keras.applications.xception import Xception
 
-from keras.callbacks import CSVLogger, EarlyStopping, TerminateOnNaN, ModelCheckpoint
+from keras.callbacks import CSVLogger, EarlyStopping, TerminateOnNaN, ModelCheckpoint, LambdaCallback
 
 import numpy as np
 import os
@@ -137,7 +137,8 @@ callbacks = [
     # ModelCheckpoint(os.path.join(mkIfNeed('models', 'tmp'), 'mCP') + f'~{args.net}~' + nameappend + '~{epoch:03d}-{acc:.4f}~',
     ModelCheckpoint(os.path.join(mkIfNeed('models', 'tmp'), 'mCP') + f'~{os.path.split(args.modelfile)[1]}~' + nameappend + '~{epoch:03d}-{acc:.4f}',
                     monitor='acc',
-                    verbose=1, save_best_only=True, mode='auto', period=3)
+                    verbose=1, save_best_only=True, mode='auto', period=5),
+    LambdaCallback(on_epoch_end=lambda epoch, logs: print(f'### {epoch} -- {time() - callbacktime}'))
 ]
 
 model.compile(loss='categorical_crossentropy',
@@ -147,7 +148,7 @@ start = time()
 
 model.fit_generator(gen(batch_size=batch_size),
                     steps_per_epoch=int(len(images) / batch_size),
-                    epochs=20,
+                    epochs=50,
                     callbacks=callbacks)
 
 finish = time()
