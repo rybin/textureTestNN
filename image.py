@@ -36,8 +36,8 @@ Folders with test images:     ds/cktd/test, [ds/cktd/test/blanket1, ...];''',
     move_parser.add_argument('--test', dest='test', action='store',
                              default=os.path.join('ds', 'cktd', 'test'),
                              help='Folder with test data')
-    move_parser.add_argument('--part', type=float, dest='part', action='store',
-                             default=4.0,
+    move_parser.add_argument('--part', type=str, dest='part', action='store',
+                             default='4.0',
                              help='Part of dataset set as test data. 1/PART of original dataset. Other set as train data.')
     move_parser.set_defaults(func=move)
 
@@ -80,14 +80,7 @@ def crop(args):
     cropInFour(args.folder, args.cropped)
 
 
-def moveTestImages(folder, _train, _test, part):
-    if part <= 1:
-        print('PART cannot be equal or leser than 1')
-        return -1
-    # Создание train и test катологов
-    train = mkIfNeed(_train)
-    test = mkIfNeed(_test)
-
+def movePart(folder, train, test, part):
     # По всем каталогам с картинками
     for k in os.listdir(folder):
         tn = mkIfNeed(train, k)
@@ -106,6 +99,49 @@ def moveTestImages(folder, _train, _test, part):
             os.rename(os.path.join(folder, k, j),
                       os.path.join(tn, j))
             print('Train:', os.path.join(folder, k, j), '>', os.path.join(tn, j))
+
+
+def moveNumber(folder, train, test, part_train, part_test):
+    # По всем каталогам с картинками
+    for k in os.listdir(folder):
+        tn = mkIfNeed(train, k)
+        tt = mkIfNeed(test, k)
+        # построить массив с именами
+        listdir = np.array(os.listdir(os.path.join(folder, k)))
+        if (len(listdir) / 2 < part_train) or \
+           (len(listdir) / 2 < part_test):
+            print(f'{part_train} | {part_test} > {len(listdir)}')
+            return -1
+        # перемешать
+        np.random.shuffle(listdir)
+        # первые part_test в test
+        for j in listdir[:part_test]:
+            os.rename(os.path.join(folder, k, j),
+                      os.path.join(tt, j))
+            print('Test:', os.path.join(folder, k, j), '>', os.path.join(tt, j))
+        # последние part_train в train
+        for j in listdir[(len(listdir) - part_train):]:
+            os.rename(os.path.join(folder, k, j),
+                      os.path.join(tn, j))
+            print('Train:', os.path.join(folder, k, j), '>', os.path.join(tn, j))
+
+
+def moveTestImages(folder, _train, _test, part):
+    # Создание train и test катологов
+    train = mkIfNeed(_train)
+    test = mkIfNeed(_test)
+
+    if ':' in part:
+        part_train, part_test = part.split(':')
+        part_train = int(part_train)
+        part_test = int(part_test)
+        moveNumber(folder, train, test, part_train, part_test)
+    else:
+        part = float(part)
+        if part <= 1:
+            print('PART cannot be equal or leser than 1')
+            return -1
+        movePart(folder, train, test, part)
 
 
 def move(args):
