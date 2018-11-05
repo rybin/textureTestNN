@@ -2,6 +2,7 @@
 import numpy as np
 from pathlib import Path
 from collections import namedtuple
+import random
 
 from keras.preprocessing.image import load_img, img_to_array
 
@@ -27,13 +28,11 @@ class NNHelp():
             self.images.extend(
                 list(
                     map(
-                        lambda x: ClassItem(i, j / x), j.iterdir()
+                        lambda x: ClassItem(i, x), j.iterdir()
                     )
                 )
             )
-
-        self.images = np.array(self.images)
-        np.random.shuffle(self.images)
+        random.shuffle(self.images)
         self.lenimg = len(self.images)
 
     def __imgload__(self, img, size=(224, 224)):
@@ -70,4 +69,4 @@ class NNHelp():
             q += self.batch_size
             if q + self.batch_size >= self.lenimg + self.batch_size:
                 q = 0
-                np.random.shuffle(self.images)
+                random.shuffle(self.images)
