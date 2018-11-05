@@ -100,9 +100,9 @@ if __name__ == '__main__':
                                        steps=int(nnhelp.lenimg / batch_size))
         diff += time() - diffstart
 
-        print(name, epoch, time() - diff - start,
-              hist.history['acc'][0], hist.history['loss'][0],
-              res[1], res[0], sep=', ')
+        print(name, epoch, '%.4f' % (time() - diff - start),
+              '%.4f' % hist.history['acc'][0], '%.4f' % hist.history['loss'][0],
+              '%.4f' % res[1], '%.4f' % res[0], sep=', ')
 
         with open(logfile, 'a') as f:
             print(name, epoch, time() - diff - start,
