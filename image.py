@@ -67,9 +67,9 @@ def cropInFour(folder, newfolder):
             img21, img22 = np.array_split(img2, 2, axis=1)
             # Записать 4 части в отдельный каталог
             cv2.imwrite(os.path.join(imgx4f, f'11_{j}'), img11)
-            cv2.imwrite(os.path.join(imgx4f, f'12_{j}'), img11)
-            cv2.imwrite(os.path.join(imgx4f, f'21_{j}'), img11)
-            cv2.imwrite(os.path.join(imgx4f, f'22_{j}'), img11)
+            cv2.imwrite(os.path.join(imgx4f, f'12_{j}'), img12)
+            cv2.imwrite(os.path.join(imgx4f, f'21_{j}'), img21)
+            cv2.imwrite(os.path.join(imgx4f, f'22_{j}'), img22)
 
             print(f"#    11_{j}", f"##   12_{j}",
                   f"###  21_{j}", f"#### 22_{j}", sep=os.linesep)
